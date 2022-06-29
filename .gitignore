@@ -1,0 +1,8 @@
+main
+map
+*.geany
+*.o
+*~
+*.bak
+
+
