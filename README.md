@@ -29,7 +29,7 @@ void foo_method(foo_t* foo, ...) {
 #### Descructor
 
 ```
-void foo_free(foo_t* foo) {
+void free_foo(foo_t* foo) {
     ...
 }
 
