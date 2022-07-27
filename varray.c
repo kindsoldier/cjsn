@@ -3,7 +3,7 @@
  */
 
 #include <stdlib.h>
-#include "varr.h"
+#include "varray.h"
 
 void varray_init(varray_t *array, size_t init_size) {
     array->payload = malloc(init_size * sizeof(void*));

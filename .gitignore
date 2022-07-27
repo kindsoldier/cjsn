@@ -4,5 +4,6 @@ map
 *.o
 *~
 *.bak
+parser
 
 
