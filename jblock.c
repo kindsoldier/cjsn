@@ -2,9 +2,13 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+
 #include "jcommon.h"
 #include "jkeyval.h"
 #include "jblock.h"
+#include "strtool.h"
+#include "imalloc.h"
 
 jblock_t* new_jblock() {
     jblock_t* jblock = malloc(sizeof(jblock));
@@ -31,7 +35,7 @@ void jblock_free(jblock_t *jblock) {
 }
 
 
-char jblock_read(jblock_t* jblock, stream_t* stream, int level) {
+char jblock_read(jblock_t* jblock, stream_t* stream, char* prefix, int level) {
     char l;
     while (true) {
         jkey_t* jkey = new_jkey();
@@ -61,13 +65,26 @@ char jblock_read(jblock_t* jblock, stream_t* stream, int level) {
             break;
         }
 
-        printf("%d %s:%s\n", level, jkey->string, jval->string);
+        char* jkey_str = strtrim(jkey->string);
+        char* jval_str = strtrim(jval->string);
+
+        char* newprefix = imalloc(strlen(prefix) + strlen(jkey_str) + sizeof(char));
+        sprintf(newprefix, "%s%c%s", prefix, PATH_DELIM, jkey_str);
+
+        if (l != BLOCK_BEG) {
+            printf("%d %s = %s\n", level, newprefix, jval_str);
+        }
+        free(jkey_str);
+        free(jval_str);
+
         free(jkey);
         free(jval);
 
         if (l == BLOCK_BEG) {
             jblock_t* next_jblock = new_jblock();
-            jblock_read(next_jblock, stream, level + 1);
+
+            jblock_read(next_jblock, stream, newprefix, level + 1);
+            free(newprefix);
             free(next_jblock);
         }
         if (l == BLOCK_END) {

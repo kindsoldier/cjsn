@@ -21,9 +21,8 @@ struct jitem {
 
 jblock_t* new_jblock();
 void jblock_addelem(jblock_t *jblock, jitem_t* elem);
+char jblock_read(jblock_t* jblock, stream_t* stream, char* prefix, int level);
+
 void jblock_free(jblock_t *jblock);
-
-char jblock_read(jblock_t* jblock, stream_t* stream, int level);
-
 
 #endif

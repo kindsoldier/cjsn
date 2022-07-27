@@ -13,4 +13,6 @@
 
 #define JSON_ERR        1
 
+#define PATH_DELIM  '/'
+
 #endif

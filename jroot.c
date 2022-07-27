@@ -2,7 +2,9 @@
 
 #include <stdlib.h>
 #include "jcommon.h"
+#include "jblock.h"
 #include "jroot.h"
+
 
 
 jroot_t* new_jroot(jblock_t* jblock) {
@@ -14,11 +16,11 @@ jroot_t* new_jroot(jblock_t* jblock) {
 
 char jroot_read(jroot_t* jroot, stream_t* stream) {
     char c;
+    char* prefix = "";
     while ((c = stream_getchar(stream)) != END_STREAM) {
         if (c == BLOCK_BEG) {
-            jblock_read(jroot->jblock, stream, 0);
+            jblock_read(jroot->jblock, stream, prefix, 0);
         }
     }
     return c;
 }
-

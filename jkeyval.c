@@ -5,11 +5,11 @@
 #include "imalloc.h"
 
 jkey_t* new_jkey() {
-    size_t init_size = 256;
-    jkey_t* jkey = malloc(sizeof(jkey_t));
+    size_t cap = 256;
+    jkey_t* jkey = imalloc(sizeof(jkey_t));
     if (jkey == NULL) return jkey;
-    jkey->size = init_size;
-    jkey->string = imalloc(init_size);
+    jkey->size = cap;
+    jkey->string = imalloc(cap);
     if (jkey->string == NULL) {
         free(jkey);
         jkey = NULL;
@@ -38,11 +38,11 @@ void jkey_free(jkey_t* jkey) {
 }
 
 jval_t* new_jval() {
-    size_t init_size = 256;
-    jval_t* jval = malloc(sizeof(jval_t));
+    size_t cap = 256;
+    jval_t* jval = imalloc(sizeof(jval_t));
     if (jval == NULL) return jval;
-    jval->size = init_size;
-    jval->string = imalloc(init_size);
+    jval->size = cap;
+    jval->string = imalloc(cap);
     if (jval->string == NULL) {
         free(jval);
         jval = NULL;
