@@ -1,10 +1,8 @@
 
 OBJS = stream.o jblock.o jkeyval.o jroot.o imalloc.o strtool.o mapper.o
 
-all: parser test
+all: test
 
-parser: parser.o $(OBJS)
-	$(CC) -Wall -o $@ $< $(OBJS)
 
 .c.o:
 	$(CC) -c -Wall -o $@ $<
@@ -30,18 +28,22 @@ strtool.o: strtool.c
 mapper.c: mapper.h
 mapper.o: mapper.c
 
+strtool_test.o: strtool_test.c
+parser_test.o: parser_test.c
 
-test: strtool_test
-		env ./$<
+test: strtool_test parser_test
+		env ./strtool_test
+		env ./parser_test
 
-strtool_test: strtool_test.o strtool.o
+
+strtool_test: strtool_test.o $(OBJS)
+	$(CC) -Wall -o $@ $< $(OBJS)
+
+parser_test: parser_test.o $(OBJS)
 	$(CC) -Wall -o $@ $< $(OBJS)
 
 
-strtool_test.o: strtool_test.c
-
-
 clean:
-	rm -f parser
+	rm -f parser_test
 	rm -f strtool_test
 	rm -f *.o *~

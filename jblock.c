@@ -9,12 +9,13 @@
 #include "jblock.h"
 #include "strtool.h"
 #include "imalloc.h"
+#include "mapper.h"
 
 jblock_t* new_jblock() {
     jblock_t* jblock = malloc(sizeof(jblock));
     if (jblock == NULL) return jblock;
     const size_t init_limit = 16;
-    jblock->elems = malloc(init_limit * sizeof(jitem_t*));
+    jblock->elems = imalloc(init_limit * sizeof(jitem_t*));
     jblock->size = 0;
     jblock->limit = init_limit;
     return jblock;
@@ -35,7 +36,7 @@ void jblock_free(jblock_t *jblock) {
 }
 
 
-char jblock_read(jblock_t* jblock, stream_t* stream, char* prefix, int level) {
+char jblock_read(jblock_t* jblock, stream_t* stream, char* jpath, int level, mapper_t* mapper) {
     char l;
     while (true) {
         jkey_t* jkey = new_jkey();
@@ -68,11 +69,12 @@ char jblock_read(jblock_t* jblock, stream_t* stream, char* prefix, int level) {
         char* jkey_str = strtrim(jkey->string);
         char* jval_str = strtrim(jval->string);
 
-        char* newprefix = imalloc(strlen(prefix) + strlen(jkey_str) + sizeof(char));
-        sprintf(newprefix, "%s%c%s", prefix, PATH_DELIM, jkey_str);
+        char* newjpath = imalloc(strlen(jpath) + strlen(jkey_str) + sizeof(char));
+        sprintf(newjpath, "%s%c%s", jpath, PATH_DELIM, jkey_str);
 
         if (l != BLOCK_BEG) {
-            printf("%d %s = %s\n", level, newprefix, jval_str);
+            //printf("l%d %s = %s\n", level, newjpath, jval_str);
+            mapper_set(mapper, newjpath, jval_str);
         }
         free(jkey_str);
         free(jval_str);
@@ -83,8 +85,8 @@ char jblock_read(jblock_t* jblock, stream_t* stream, char* prefix, int level) {
         if (l == BLOCK_BEG) {
             jblock_t* next_jblock = new_jblock();
 
-            jblock_read(next_jblock, stream, newprefix, level + 1);
-            free(newprefix);
+            jblock_read(next_jblock, stream, newjpath, level + 1, mapper);
+            free(newjpath);
             free(next_jblock);
         }
         if (l == BLOCK_END) {

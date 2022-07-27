@@ -6,11 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TYPE_STR    11
-#define TYPE_INT    12
-#define TYPE_FLOAT  13
-#define TYPE_BOOL   14
-
+#define TYPE_STR    1
+#define TYPE_INT    2
+#define TYPE_FLOAT  3
+#define TYPE_BOOL   4
 
 typedef struct {
     char*   key;
