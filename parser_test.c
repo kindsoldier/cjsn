@@ -92,6 +92,7 @@ void parser() {
     mapper_add(mapper, new_mrecord("/auth/salt", TYPE_STR, &(rpcreq->auth->salt)));
     mapper_add(mapper, new_mrecord("/auth/hash", TYPE_STR, &(rpcreq->auth->hash)));
 
+
     stream_t* stream = new_stream(origin4);
     jblock_t* jblock = new_jblock();
     jroot_t* jroot = new_jroot(jblock);
