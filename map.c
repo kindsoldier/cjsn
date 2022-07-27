@@ -5,44 +5,100 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define TYPE_STR 1
+#define TYPE_INT 2
 
 typedef struct {
-    char* key;
-    int type;
+    char*   key;
+    int     type;
     union {
-        void* value;
+        char**  cref;
+        int*    iref;
     };
-} map_t;
-
+} record_t;
 
 typedef struct {
-    int num;
-    char* msg;
+    record_t **records;
+    size_t size;
+    size_t cap;
+} maper_t;
 
-} msg_t;
-
-
-void* new_msg() {
-    return malloc(sizeof(msg_t));
+record_t* new_record(char* key, int type, void* val) {
+    record_t *record = malloc(sizeof(record_t));
+    record->key = key;
+    record->type = type;
+    switch (type) {
+         case TYPE_STR:
+             record->cref = val;
+             break;
+         case TYPE_INT:
+             record->iref = val;
+             break;
+    }
+    return record;
 }
+
+maper_t* new_maper() {
+    maper_t* maper = malloc(sizeof(maper_t));
+    maper->cap = 100;
+    maper->size = 0;
+    maper->records = malloc(sizeof(record_t*) * maper->cap);
+    return maper;
+}
+
+void maper_add(maper_t *maper, record_t* record) {
+    maper->records[maper->size++] = record;
+}
+
+record_t* maper_find(maper_t* maper, char* key) {
+    for (int i = 0; i < maper->size; i++) {
+        if (strcmp(maper->records[i]->key, key) == 0) {
+            return maper->records[i];
+        }
+    }
+    return NULL;
+}
+
+void maper_set(maper_t* maper, char* key, char* val) {
+    for (int i = 0; i < maper->size; i++) {
+        if (strcmp(maper->records[i]->key, key) == 0) {
+            printf("key %d %s %s\n", i, key, val);
+            int n = 0;
+            switch (maper->records[i]->type) {
+                 case TYPE_STR:
+                    *(maper->records[i]->cref) = val;
+                    break;
+                 case TYPE_INT:
+                    n = strtol(val, NULL, 10);
+                    *(maper->records[i]->iref) = n;
+                    break;
+
+            }
+        }
+    }
+}
+
+typedef struct {
+    char* elem1;
+    char* elem2;
+    int elem3;
+} test_t;
+
 int main(int argc, char **argv) {
 
-    msg_t* msg = new_msg();
-    map_t elems[] = {
-        { .key = "num", .type = 1, .value = &(msg->num) },
-        { .key = "msg", .type = 2, .value = &(msg->msg) }
-    };
+    test_t t;
 
-    //int i = 1;
-    //char* t = "qwerty";
-    int i;
-    for (i = 0; i < 2; i++) {
-        printf("%s\n", elems[i].key);
-        //*(int*)(elems[0].value) = i;
-        //*(char**)(elem[1].value) = t;
-    }
+    maper_t* maper = new_maper();
+    maper_add(maper, new_record("key1", TYPE_STR, &(t.elem1)));
+    maper_add(maper, new_record("key2", TYPE_STR, &(t.elem2)));
+    maper_add(maper, new_record("key3", TYPE_INT, &(t.elem3)));
 
+    maper_set(maper, "key1", "val1");
+    maper_set(maper, "key2", "val2");
+    maper_set(maper, "key3", "123");
+    printf("%s %s %d\n", t.elem1, t.elem2, t.elem3);
 
-    //printf("msg %d %s\n", msg->num, msg->msg);
     return 0;
 }
