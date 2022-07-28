@@ -67,7 +67,7 @@ void parser() {
 #### Output
 
 ```
-gmake all (in directory: /home/ziggi/cjs)
+$ gmake all
 cc -c -Wall -o jblock.o jblock.c
 cc -Wall -o strtool_test strtool_test.o stream.o jblock.o jkeyval.o jroot.o imalloc.o strtool.o mapper.o
 cc -Wall -o parser_test parser_test.o stream.o jblock.o jkeyval.o jroot.o imalloc.o strtool.o mapper.o
