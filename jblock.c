@@ -61,13 +61,13 @@ char jblock_read(jblock_t* jblock, stream_t* stream, char* jpath, int level, map
 
         l = jval_read(jval, stream);
         if (l == EOF) {
-            jkey_free(jkey);
-            jval_free(jval);
+            if (jkey != NULL) jkey_free(jkey);
+            if (jval != NULL) jval_free(jval);
             break;
         }
 
-        char* jkey_str = strtrim(jkey->string);
-        char* jval_str = strtrim(jval->string);
+        char* jkey_str = qttrim(jkey->string);
+        char* jval_str = qttrim(jval->string);
 
         char* newjpath = imalloc(strlen(jpath) + strlen(jkey_str) + sizeof(char));
         sprintf(newjpath, "%s%c%s", jpath, PATH_DELIM, jkey_str);
@@ -76,24 +76,20 @@ char jblock_read(jblock_t* jblock, stream_t* stream, char* jpath, int level, map
             //printf("l%d %s = %s\n", level, newjpath, jval_str);
             mapper_set(mapper, newjpath, jval_str);
         }
-        free(jkey_str);
-        free(jval_str);
-
-        free(jkey);
-        free(jval);
+        if (jkey != NULL) jkey_free(jkey);
+        if (jval != NULL) jval_free(jval);
 
         if (l == BLOCK_BEG) {
             jblock_t* next_jblock = new_jblock();
-
             jblock_read(next_jblock, stream, newjpath, level + 1, mapper);
-            free(newjpath);
-            free(next_jblock);
+            if (next_jblock != NULL) free(next_jblock);
         }
+        if (newjpath != NULL) free(newjpath);
+
         if (l == BLOCK_END) {
-            jkey_free(jkey);
-            jval_free(jval);
             break;
         }
+
     }
     return l;
 }

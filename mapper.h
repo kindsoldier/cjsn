@@ -32,4 +32,6 @@ void mapper_add(mapper_t *mapper, mrecord_t* record);
 mrecord_t* mapper_find(mapper_t* mapper, char* key);
 void mapper_set(mapper_t* mapper, char* key, char* val);
 
+void mapper_print(mapper_t* mapper);
+
 #endif

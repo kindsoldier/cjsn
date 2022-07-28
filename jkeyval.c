@@ -5,7 +5,7 @@
 #include "imalloc.h"
 
 jkey_t* new_jkey() {
-    size_t cap = 256;
+    size_t cap = 1024;
     jkey_t* jkey = imalloc(sizeof(jkey_t));
     if (jkey == NULL) return jkey;
     jkey->size = cap;
@@ -38,7 +38,7 @@ void jkey_free(jkey_t* jkey) {
 }
 
 jval_t* new_jval() {
-    size_t cap = 256;
+    size_t cap = 1024;
     jval_t* jval = imalloc(sizeof(jval_t));
     if (jval == NULL) return jval;
     jval->size = cap;

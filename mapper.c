@@ -5,9 +5,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "imalloc.h"
 #include "mapper.h"
+#include "strtool.h"
 
 mrecord_t* new_mrecord(char* key, int type, void* valref) {
     mrecord_t *record = imalloc(sizeof(mrecord_t));
@@ -24,6 +26,22 @@ mrecord_t* new_mrecord(char* key, int type, void* valref) {
     return record;
 }
 
+void mrecord_free(mrecord_t* record) {
+    if (record != NULL) {
+        if (record->key != NULL) free(record->key);
+        if (record->cref != NULL) free(record->cref);
+        free(record);
+    }
+}
+
+int mrecord_level(mrecord_t* record) {
+    int level = -1;
+    if (record != NULL) {
+
+    }
+    return level;
+}
+
 mapper_t* new_mapper() {
     mapper_t* mapper = imalloc(sizeof(mapper_t)); // todo: check NULL
     mapper->cap = 100;
@@ -33,13 +51,13 @@ mapper_t* new_mapper() {
 }
 
 void mapper_add(mapper_t *mapper, mrecord_t* record) {
-    //if (mapper->size == mapper->cap) {
-    //    size_t new_cap = mapper->cap * 2;
-    //    if (realloc(mapper->records, sizeof(mrecord_t*) * new_cap) == NULL) {
-    //        return; // todo: return error_t
-    //    }
-    //    mapper->cap = new_cap;
-    //}
+    if (mapper->size == mapper->cap) {
+        size_t new_cap = mapper->cap * 2;
+        if (realloc(mapper->records, sizeof(mrecord_t*) * new_cap) == NULL) {
+            return; // todo: return error_t
+        }
+        mapper->cap = new_cap;
+    }
     mapper->records[mapper->size] = record;
     mapper->size++;
 }
@@ -75,4 +93,81 @@ void mapper_set(mapper_t* mapper, char* key, char* val) {
             }
         }
     }
+}
+
+void print_indent(int len) {
+    for (int i = 0; i < len; i++) {
+        printf("    ");
+    }
+}
+
+void record_print(char* key, mrecord_t* record) {
+    switch (record->type) {
+        case TYPE_STR:
+            if (*record->cref != NULL) {
+                printf("\"%s\":\"%s\"", key, *record->cref);
+            }
+            break;
+    }
+}
+
+void mapper_print(mapper_t* mapper) {
+    int depth = 0;
+    int prevdepth = 0;
+    printf("\n{\n");
+    for (int i = 0; i < mapper->size; i++) {
+        mrecord_t* record = mapper->records[i];
+        char** keyarr = NULL;
+
+        depth = csplitstr(record->key, &keyarr, 1024, '/') - 1;
+
+        if (depth < prevdepth) {
+            for (int n = 0; n < (prevdepth - depth); n++) {
+                printf("\n");
+                print_indent(depth);
+                printf("},\n");
+            }
+            print_indent(depth);
+            record_print(keyarr[depth], record);
+            prevdepth = depth;
+            continue;
+        }
+        if (depth > prevdepth && prevdepth == 0) {
+            for (int n = 1; n < (depth - prevdepth); n++) {
+                printf("\n");
+                print_indent(depth);
+                printf("\"%s\":{\n", keyarr[prevdepth + n]);
+            }
+            print_indent(depth);
+            record_print(keyarr[depth], record);
+            prevdepth = depth;
+            continue;
+        }
+
+        if (depth > prevdepth && prevdepth > 0) {
+            for (int n = 0; n < (depth - prevdepth); n++) {
+                printf(",\n");
+                print_indent(depth - 1);
+                printf("\"%s\":{\n", keyarr[depth - 1]);
+            }
+            print_indent(depth);
+            record_print(keyarr[depth], record);
+            prevdepth = depth;
+            continue;
+        }
+        if (depth == prevdepth) {
+            printf(",\n");
+            print_indent(depth);
+            record_print(keyarr[depth], record);
+            prevdepth = depth;
+            continue;
+        }
+    }
+    depth = 0;
+    for (int n = 0; n < (prevdepth - depth); n++) {
+        printf("\n");
+        print_indent(prevdepth - n - 1);
+        printf("}\n");
+    }
+
 }
