@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
+
 
 #include "imalloc.h"
 #include "mapper.h"
@@ -21,6 +23,12 @@ mrecord_t* new_mrecord(char* key, int type, void* valref) {
              break;
          case TYPE_INT:
              record->iref = valref;
+             break;
+         case TYPE_FLOAT:
+             record->fref = valref;
+             break;
+         case TYPE_BOOL:
+             record->bref = valref;
              break;
     }
     return record;
@@ -76,20 +84,32 @@ void mapper_set(mapper_t* mapper, char* key, char* val) {
         if (mapper->records[i] == NULL) continue;
         if (strcmp(mapper->records[i]->key, key) == 0) {
 
-            int n = 0;
-            char* newval = NULL;
+            int     n = 0;
+            double  f = 0;
+            char*   s = NULL;
             int type = mapper->records[i]->type;
             switch (type) {
-                 case TYPE_STR:
-                    newval = imalloc(strlen(val));
-                    strcpy(newval, val);
-                    *(mapper->records[i]->cref) = newval;
+                case TYPE_STR:
+                    s = imalloc(strlen(val));
+                    strcpy(s, val);
+                    *(mapper->records[i]->cref) = s;
                     break;
-                 case TYPE_INT:
+                case TYPE_INT:
                     n = strtol(val, NULL, 10);
                     *(mapper->records[i]->iref) = n;
                     break;
-
+                case TYPE_FLOAT:
+                    f = strtod(val, NULL);
+                    *(mapper->records[i]->fref) = f;
+                    break;
+                case TYPE_BOOL:
+                    for (int n = 0; n < strlen(val); n++) {
+                        tolower(val[n]);
+                    }
+                    if (strcmp(val, "true") == 0) {
+                        *(mapper->records[i]->bref) = true;
+                    }
+                    break;
             }
         }
     }
@@ -102,11 +122,24 @@ void print_indent(int len) {
 }
 
 void record_print(char* key, mrecord_t* record) {
+    char* boolstr = "false";
     switch (record->type) {
         case TYPE_STR:
             if (*record->cref != NULL) {
                 printf("\"%s\":\"%s\"", key, *record->cref);
             }
+            break;
+        case TYPE_INT:
+            printf("\"%s\":%d", key, *record->iref);
+            break;
+        case TYPE_FLOAT:
+            printf("\"%s\":%lf", key, *record->fref);
+            break;
+        case TYPE_BOOL:
+            if (*record->bref == true) {
+                boolstr = "true";
+            }
+            printf("\"%s\":%s", key, boolstr);
             break;
     }
 }

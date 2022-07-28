@@ -10,6 +10,6 @@ typedef struct {
 } jroot_t;
 
 jroot_t* new_jroot(jblock_t* jblock);
-char jroot_read(jroot_t* jroot, stream_t* stream, mapper_t* mapper);
+char jroot_read(jroot_t* jroot, rstream_t* stream, mapper_t* mapper);
 
 #endif

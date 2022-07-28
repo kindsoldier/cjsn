@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define TYPE_STR    1
 #define TYPE_INT    2
@@ -17,6 +18,8 @@ typedef struct {
     union {
         char**  cref;
         int*    iref;
+        double* fref;
+        bool*   bref;
     };
 } mrecord_t;
 

@@ -18,10 +18,10 @@ jkey_t* new_jkey() {
     return jkey;
 }
 
-char jkey_read(jkey_t* jkey, stream_t* stream) {
+char jkey_read(jkey_t* jkey, rstream_t* stream) {
     size_t pos = 0;
     char c;
-    while ((c = stream_getchar(stream)) != END_STREAM) {
+    while ((c = rstream_getchar(stream)) != END_STREAM) {
         if (c == KEYV_DELIM) break;
         if (c == BLOCK_END) break;
         if (c == BLOCK_CONT) break;
@@ -58,10 +58,10 @@ void jval_free(jval_t* jval) {
     }
 }
 
-char jval_read(jval_t* jval, stream_t* stream) {
+char jval_read(jval_t* jval, rstream_t* stream) {
     size_t pos = 0;
     char c;
-    while ((c = stream_getchar(stream)) != END_STREAM) {
+    while ((c = rstream_getchar(stream)) != END_STREAM) {
         if (c == BLOCK_CONT) break;
         if (c == BLOCK_END) break;
         jval->string[pos++] = c;

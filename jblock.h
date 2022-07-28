@@ -22,7 +22,7 @@ struct jitem {
 
 jblock_t* new_jblock();
 void jblock_addelem(jblock_t *jblock, jitem_t* elem);
-char jblock_read(jblock_t* jblock, stream_t* stream, char* jpath, int level, mapper_t* mapper);
+char jblock_read(jblock_t* jblock, rstream_t* rstream, char* jpath, int level, mapper_t* mapper);
 
 void jblock_free(jblock_t *jblock);
 

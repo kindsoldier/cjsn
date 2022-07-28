@@ -16,12 +16,12 @@ typedef struct {
 
 
 jkey_t* new_jkey();
-char jkey_read(jkey_t* jkey, stream_t* stream);
+char jkey_read(jkey_t* jkey, rstream_t* rstream);
 void jkey_free(jkey_t* jkey);
 
 
 jval_t* new_jval();
 void jval_free(jval_t* jval);
-char jval_read(jval_t* jval, stream_t* stream);
+char jval_read(jval_t* jval, rstream_t* rstream);
 
 #endif

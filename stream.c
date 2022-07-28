@@ -4,28 +4,28 @@
 #include <stdio.h>
 #include "stream.h"
 
-stream_t* new_stream(char* origin) {
-    stream_t* stream = malloc(sizeof(stream_t));
-    if (stream == NULL) {
-        return stream;
+rstream_t* new_rstream(char* origin) {
+    rstream_t* rstream = malloc(sizeof(rstream_t));
+    if (rstream == NULL) {
+        return rstream;
     }
-    stream->origin = origin;
-    stream->pos = 0;
-    return stream;
+    rstream->origin = origin;
+    rstream->pos = 0;
+    return rstream;
 }
 
-void stream_init(stream_t* stream, char* origin) {
-    stream->origin = origin;
-    stream->pos = 0;
+void rstream_init(rstream_t* rstream, char* origin) {
+    rstream->origin = origin;
+    rstream->pos = 0;
 }
 
-char stream_getchar(stream_t* stream) {
-    if (stream->pos == strlen(stream->origin)) {
+char rstream_getchar(rstream_t* rstream) {
+    if (rstream->pos == strlen(rstream->origin)) {
         return EOF;
     }
-    return stream->origin[stream->pos++];
+    return rstream->origin[rstream->pos++];
 }
 
-void stream_free(stream_t* stream) {
-    free(stream);
+void rstream_free(rstream_t* rstream) {
+    free(rstream);
 }

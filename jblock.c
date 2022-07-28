@@ -36,7 +36,7 @@ void jblock_free(jblock_t *jblock) {
 }
 
 
-char jblock_read(jblock_t* jblock, stream_t* stream, char* jpath, int level, mapper_t* mapper) {
+char jblock_read(jblock_t* jblock, rstream_t* stream, char* jpath, int level, mapper_t* mapper) {
     char l;
     while (true) {
         jkey_t* jkey = new_jkey();

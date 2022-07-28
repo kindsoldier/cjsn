@@ -6,11 +6,11 @@
 typedef struct {
     char* origin;
     int pos;
-} stream_t;
+} rstream_t;
 
-stream_t* new_stream(char* origin);
-void stream_init(stream_t* stream, char* origin);
-char stream_getchar(stream_t* stream);
-void stream_free(stream_t* stream);
+rstream_t* new_rstream(char* origin);
+void rstream_init(rstream_t* rstream, char* origin);
+char rstream_getchar(rstream_t* rstream);
+void rstream_free(rstream_t* rstream);
 
 #endif

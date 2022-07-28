@@ -13,37 +13,7 @@
 #include "jroot.h"
 #include "imalloc.h"
 
-char* origin1 = "{ \"key1\" : \"val1\",  \"key2\": \"val2\", \"key3\": 123 }";
-char* origin2 = ",{x,a:{b:{c:e,m:n}},,  ,d:\"e\"}}";
-char* origin3 = "{\"browsers\":{\"firefox\":{\"name\":\"Firefox\",\"pref_url\":\"about:config\",\"releases\":{\"1\":{\"release_date\":\"2004-11-09\",\"status\":\"retired\",\"engine\":\"Gecko\",\"engine_version\":\"1.7\"}}}}}";
-char* origin4 = "{\"method\":\"saveFile\",\"params\":{\"filePath\":\"/a/b/c/file1.bin\"},\"auth\":{\"ident\":\"YWRtaW4=\",\"hash\":\"YWRt4VQ==\",\"salt\":\"8X1tqNKg2Gji1y67F1UGEQ==\"},\"name\":\"engine\"}";
-
-/*
- {
-  "browsers": {
-    "firefox": {
-      "name": "Firefox",
-      "pref_url": "about:config",
-      "releases": {
-        "1": {
-          "release_date": "2004-11-09",
-          "status": "retired",
-          "engine": "Gecko",
-          "engine_version": "1.7"
-        }
-      }
-    }
-  }
-}
-
-2 /browsers/firefox/name = Firefox
-2 /browsers/firefox/pref_url = about:config
-4 /browsers/firefox/releases/1/release_date = 2004-11-09
-4 /browsers/firefox/releases/1/status = retired
-4 /browsers/firefox/releases/1/engine = Gecko
-4 /browsers/firefox/releases/1/engine_version = 1.7
-
-*/
+char* origin = "{\"dist\":13.1,\"count\":78,\"method\":\"saveFile\",\"params\":{\"filePath\":\"/a/b/c/file1.bin\"},\"auth\":{\"ident\":\"YWRtaW4=\",\"hash\":\"YWRt4VQ==\",\"salt\":\"8X1tqNKg2Gji1y67F1UGEQ==\"},\"name\":\"engine\"}";
 
 /*
 0 /method = saveFile
@@ -60,9 +30,12 @@ typedef struct {
 } rpcauth_t;
 
 typedef struct {
-    char* method;
-    rpcauth_t* auth;
-    char* name;
+    char*       method;
+    rpcauth_t*  auth;
+    char*       name;
+    bool        exist;
+    float       dist;
+    int         count;
 } rpcreq_t;
 
 rpcauth_t* new_rpcauth() {
@@ -77,8 +50,13 @@ rpcauth_t* new_rpcauth() {
 rpcreq_t* new_rpcreq(rpcauth_t* auth) {
     rpcreq_t* rpcreq = imalloc(sizeof(rpcreq_t));
     if (rpcreq == NULL) { return rpcreq; }
-    rpcreq->method = NULL;
-    rpcreq->auth = auth;
+    rpcreq->method  = NULL;
+    rpcreq->name    = NULL;
+    rpcreq->exist   = false;
+    rpcreq->dist    = 0;
+    rpcreq->count   = 0;
+    rpcreq->auth    = auth;
+
     return rpcreq;
 }
 
@@ -89,17 +67,18 @@ void parser() {
 
     mapper_t* mapper = new_mapper();
     mapper_add(mapper, new_mrecord("/method", TYPE_STR, &(rpcreq->method)));
-    mapper_add(mapper, new_mrecord("/auth/hash", TYPE_STR, &(rpcreq->auth->hash)));
     mapper_add(mapper, new_mrecord("/auth/salt", TYPE_STR, &(rpcreq->auth->salt)));
     mapper_add(mapper, new_mrecord("/auth/ident", TYPE_STR, &(rpcreq->auth->ident)));
+    mapper_add(mapper, new_mrecord("/auth/hash", TYPE_STR, &(rpcreq->auth->hash)));
     mapper_add(mapper, new_mrecord("/name", TYPE_STR, &(rpcreq->name)));
+    mapper_add(mapper, new_mrecord("/count", TYPE_INT, &(rpcreq->count)));
+    mapper_add(mapper, new_mrecord("/dist", TYPE_FLOAT, &(rpcreq->dist)));
 
-
-    stream_t* stream = new_stream(origin4);
+    rstream_t* stream = new_rstream(origin);
     jblock_t* jblock = new_jblock();
     jroot_t* jroot = new_jroot(jblock);
     jroot_read(jroot, stream, mapper);
-    stream_free(stream);
+    rstream_free(stream);
 
     //printf("method: %s\n", rpcreq->method);
     //printf("ident: %s\n", rpcreq->auth->ident);
