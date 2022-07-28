@@ -66,13 +66,15 @@ void parser() {
     rpcreq_t* rpcreq = new_rpcreq(rpcauth);
 
     mapper_t* mapper = new_mapper();
-    mapper_add(mapper, new_mrecord("/method", TYPE_STR, &(rpcreq->method)));
+    mapper_add(mapper, new_mrecord("/name", TYPE_STR, &(rpcreq->name)));
+    mapper_add(mapper, new_mrecord("/count", TYPE_INT, &(rpcreq->count)));
+    //mapper_add(mapper, new_mrecord("/dist", TYPE_FLOAT, &(rpcreq->dist)));
+
     mapper_add(mapper, new_mrecord("/auth/salt", TYPE_STR, &(rpcreq->auth->salt)));
     mapper_add(mapper, new_mrecord("/auth/ident", TYPE_STR, &(rpcreq->auth->ident)));
     mapper_add(mapper, new_mrecord("/auth/hash", TYPE_STR, &(rpcreq->auth->hash)));
-    mapper_add(mapper, new_mrecord("/name", TYPE_STR, &(rpcreq->name)));
-    mapper_add(mapper, new_mrecord("/count", TYPE_INT, &(rpcreq->count)));
-    mapper_add(mapper, new_mrecord("/dist", TYPE_FLOAT, &(rpcreq->dist)));
+    mapper_add(mapper, new_mrecord("/method", TYPE_STR, &(rpcreq->method)));
+
 
     rstream_t* stream = new_rstream(origin);
     jblock_t* jblock = new_jblock();

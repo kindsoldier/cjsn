@@ -121,6 +121,16 @@ void print_indent(int len) {
     }
 }
 
+char* getspstr(int len) {
+    char* str = malloc(len + 1);
+    if (str != NULL) {
+        memset(str, ' ', len + 1);
+        str[len] = '\0';
+    }
+    return str;
+}
+
+
 void record_print(char* key, mrecord_t* record) {
     char* boolstr = "false";
     switch (record->type) {
@@ -147,7 +157,9 @@ void record_print(char* key, mrecord_t* record) {
 void mapper_print(mapper_t* mapper) {
     int depth = 0;
     int prevdepth = 0;
+    int inlen = 8;
     printf("\n{\n");
+
     for (int i = 0; i < mapper->size; i++) {
         mrecord_t* record = mapper->records[i];
         char** keyarr = NULL;
@@ -156,51 +168,55 @@ void mapper_print(mapper_t* mapper) {
 
         if (depth < prevdepth) {
             for (int n = 0; n < (prevdepth - depth); n++) {
-                printf("\n");
-                print_indent(depth);
-                printf("},\n");
+                char* sp = getspstr((n + 1) * inlen);
+                printf("\n%s},\n%s", sp, sp);
+                free(sp);
             }
-            print_indent(depth);
             record_print(keyarr[depth], record);
             prevdepth = depth;
+
             continue;
         }
         if (depth > prevdepth && prevdepth == 0) {
-            for (int n = 1; n < (depth - prevdepth); n++) {
-                printf("\n");
-                print_indent(depth);
-                printf("\"%s\":{\n", keyarr[prevdepth + n]);
+            if ((depth - prevdepth) > 1) {
+                for (int n = 1; n < (depth - prevdepth); n++) {
+                    char* sp = getspstr((n) * inlen);
+                    printf("\n%s\"%s\":{\n%s%s", sp, keyarr[prevdepth + n], sp, sp);
+                    free(sp);
+                }
+            } else {
+                char* sp = getspstr((depth) * inlen);
+                printf("%s", sp);
+                free(sp);
             }
-            print_indent(depth);
             record_print(keyarr[depth], record);
             prevdepth = depth;
             continue;
         }
-
         if (depth > prevdepth && prevdepth > 0) {
             for (int n = 0; n < (depth - prevdepth); n++) {
-                printf(",\n");
-                print_indent(depth - 1);
-                printf("\"%s\":{\n", keyarr[depth - 1]);
+                char* sp = getspstr((n + 1) * inlen);
+                printf(",\n%s\"%s\":{\n%s%s", sp, keyarr[depth - 1], sp, sp);
+                free(sp);
             }
-            print_indent(depth);
             record_print(keyarr[depth], record);
             prevdepth = depth;
             continue;
         }
         if (depth == prevdepth) {
-            printf(",\n");
-            print_indent(depth);
+            char* sp = getspstr((depth) * inlen);
+            printf(",\n%s", sp);
             record_print(keyarr[depth], record);
             prevdepth = depth;
+            free(sp);
             continue;
         }
     }
     depth = 0;
     for (int n = 0; n < (prevdepth - depth); n++) {
-        printf("\n");
-        print_indent(prevdepth - n - 1);
-        printf("}\n");
+        char* sp = getspstr((prevdepth - n - 1) * inlen);
+        printf("\n%s}\n", sp);
+        free(sp);
     }
 
 }
